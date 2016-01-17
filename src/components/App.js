@@ -13,11 +13,13 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { Body } from "./Body";
 import { EpisodeNowPlaying } from "./player/EpisodeNowPlaying";
+import { MovieNowPlaying } from "./player/MovieNowPlaying";
 
 const PLAYER_POLLING_INTERVAL = 1000;
 
 const ItemTypes = {
-    EPISODE: "episode"
+    EPISODE: "episode",
+    MOVIE: "movie"
 };
 
 function timerLoop(interval) {
@@ -113,20 +115,28 @@ export class App extends Component {
         const item = this.state.playerItem;
         const properties = this.state.playerProperties;
 
+        const props = {
+            activePlayer,
+            thumbnail: item.thumbnail,
+            title: item.title,
+            currentTime: properties.time,
+            totalTime: properties.totaltime,
+            speed: properties.speed
+        };
+
         switch (item.type) {
             case ItemTypes.EPISODE:
                 return (
-                    <EpisodeNowPlaying
-                        activePlayer={activePlayer}
-                        thumbnail={item.thumbnail}
-                        title={item.title}
+                    <EpisodeNowPlaying {...props}
                         showTitle={item.showtitle}
                         season={item.season}
                         episode={item.episode}
-                        currentTime={properties.time}
-                        totalTime={properties.totaltime}
-                        speed={properties.speed}
                     />
+                );
+
+            case ItemTypes.MOVIE:
+                return (
+                    <MovieNowPlaying {...props} />
                 );
 
             default:

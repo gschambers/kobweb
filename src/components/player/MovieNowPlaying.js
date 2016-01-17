@@ -1,13 +1,10 @@
 import React, { Component, PropTypes } from "react";
-import { PlayerItem, timePropTypes } from "./PlayerItem";
+import { NowPlaying, timePropTypes } from "./NowPlaying";
 
-export class EpisodePlayerItem extends Component {
+export class MovieNowPlaying extends Component {
     static propTypes = {
         thumbnail: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        showTitle: PropTypes.string.isRequired,
-        season: PropTypes.number,
-        episode: PropTypes.number,
         currentTime: timePropTypes.isRequired,
         totalTime: timePropTypes.isRequired
     };
@@ -15,18 +12,20 @@ export class EpisodePlayerItem extends Component {
     render() {
         const {
             title,
-            showTitle,
-            season,
-            episode,
             ...itemProps
         } = this.props;
 
         return (
-            <PlayerItem {...itemProps}>
-                <div>{showTitle}</div>
-                <div>Season {season}, Episode {episode}</div>
-                <div>{title}</div>
-            </PlayerItem>
+            <NowPlaying {...itemProps}>
+                <div style={titleStyle}>
+                    {title}
+                </div>
+            </NowPlaying>
         )
     }
 }
+
+const titleStyle = {
+    color: "#333",
+    fontSize: 15
+};
