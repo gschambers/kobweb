@@ -1,53 +1,65 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 
 export class Search extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            searchFocus: false,
-            searchValue: ""
+            focus: false,
+            value: ""
         };
     }
 
-    onSearchChange = (evt) => {
+    onClick = (evt) => {
+        if (this.hasFocus()) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            return;
+        }
+
+        ReactDOM.findDOMNode(this.refs.input).focus();
+    };
+
+    onChange = (evt) => {
         this.setState({
-            searchValue: evt.target.value
+            value: evt.target.value
         });
     };
 
-    onSearchBlur = (evt) => {
+    onBlur = (evt) => {
         this.setState({
-            searchFocus: false
+            focus: false
         });
     };
 
-    onSearchFocus = (evt) => {
+    onFocus = (evt) => {
         this.setState({
-            searchFocus: true
+            focus: true
         });
     };
 
-    hasSearchFocus() {
-        return this.state.searchFocus === true;
+    hasFocus() {
+        return this.state.focus === true;
     }
 
     shouldShowPlaceholder() {
-        return !this.state.searchFocus && this.state.searchValue === "";
+        return !this.state.focus && this.state.value === "";
     }
 
     render() {
         return (
-            <div style={searchStyle}>
+            <div style={searchStyle} onMouseDown={this.onClick} onClick={this.onClick}>
                 <i className="fa fa-search" style={searchIconStyle} />
 
                 <input
+                    ref="input"
                     type="text"
                     style={searchInputStyle}
-                    value={this.state.searchValue}
-                    onChange={this.onSearchChange}
-                    onBlur={this.onSearchBlur}
-                    onFocus={this.onSearchFocus}
+                    value={this.state.value}
+                    onChange={this.onChange}
+                    onBlur={this.onBlur}
+                    onFocus={this.onFocus}
                 />
 
                 {this.shouldShowPlaceholder() ? (
