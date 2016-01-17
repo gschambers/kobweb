@@ -79,11 +79,13 @@ export class NowPlaying extends Component {
 
         const completePercentage = this.getCompletePercentage();
 
-        const progressBarInnerStyle = {
-            backgroundColor: "#12b2e7",
-            height: 3,
+        const innerStyle = Object.assign({
             width: `${completePercentage}%`
-        };
+        }, progressBarInnerStyle);
+
+        const handleStyle = Object.assign({
+            left: `calc(${completePercentage}% - 5px)`
+        }, progressBarHandleStyle);
 
         const playPauseStyle = Object.assign(
             { width: 60, height: 60 },
@@ -120,7 +122,8 @@ export class NowPlaying extends Component {
                 </div>
 
                 <div style={progressBarStyle}>
-                    <div style={progressBarInnerStyle} />
+                    <div style={innerStyle} />
+                    <div style={handleStyle} />
                 </div>
 
                 <div style={bodyStyle}>
@@ -160,7 +163,7 @@ const controlStyle = {
     backgroundColor: "#f0f0f0",
     color: "#bbb",
     borderRadius: 60,
-    border: "3px solid white",
+    border: "2px solid white",
     cursor: "pointer"
 };
 
@@ -170,10 +173,26 @@ const controlHoverStyle = {
 };
 
 const progressBarStyle = {
+    position: "relative",
     width: "100%",
     backgroundColor: "#d9d9d9",
     marginTop: 10,
     marginBottom: 10
+};
+
+const progressBarHandleStyle = {
+    position: "absolute",
+    backgroundColor: "#12b2e7",
+    width: 10,
+    height: 10,
+    borderRadius: 10,
+    top: -4,
+    cursor: "pointer"
+};
+
+const progressBarInnerStyle = {
+    backgroundColor: "#12b2e7",
+    height: 3
 };
 
 const bodyStyle = {
