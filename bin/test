@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var gulp = require("gulp");
+var path = require("path");
+
+require("babel-core/register");
+
+gulp("test/**/*.spec.js", function(_, files) {
+    files.forEach(function(file) {
+        require(path.join(process.cwd(), file));
+    });
+});

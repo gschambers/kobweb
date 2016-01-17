@@ -1,0 +1,83 @@
+#!/usr/bin/env node
+
+require("dotenv").load({ silent: true });
+
+var bodyParser = require("body-parser");
+var express = require("express");
+var path = require("path");
+var superagent = require("superagent");
+
+var env = process.env.NODE_ENV;
+
+function isProduction() {
+    return env === "production";
+}
+
+var app = express();
+
+if (!isProduction()) {
+    var open = require("open");
+    var webpack = require("webpack");
+    var config = require("../webpack.config");
+    var compiler = webpack(config);
+
+    app.use(require("webpack-dev-middleware")(compiler, {
+        noInfo: true,
+        publicPath: config.output.publicPath
+    }));
+
+    app.use(require("webpack-hot-middleware")(compiler));
+}
+
+app.use("/dist", express.static(path.resolve(__dirname, "../dist")));
+app.use("/static", express.static(path.resolve(__dirname, "../static")));
+
+const authHeader = "Basic " + new Buffer(
+    process.env.UPSTREAM_USER + ":" +
+    process.env.UPSTREAM_PASS
+).toString("base64");
+
+app.post("/jsonrpc", bodyParser.json(), function(req, res) {
+    superagent
+        .post(`${process.env.UPSTREAM_URL}/jsonrpc`)
+        .set("Authorization", authHeader)
+        .send(req.body)
+        .end((err, resp) => {
+            if (err) {
+                console.error(err);
+            } else {
+                res.send(resp.body);
+            }
+        });
+});
+
+app.get("/image/:resource", function(req, res) {
+    superagent
+        .get(`${process.env.UPSTREAM_URL}/image/${encodeURIComponent(req.params.resource)}`)
+        .set("Authorization", authHeader)
+        .pipe(res);
+});
+
+app.get("/", function(req, res) {
+    res.sendFile(path.resolve(__dirname, "../index.html"));
+});
+
+var host = process.env.HOST;
+var port = process.env.PORT;
+
+app.listen(port, host, function(err) {
+    if (err) {
+        console.error(err.stack ? err.stack : err);
+        return;
+    }
+
+    console.log(
+        "Listening on http://%s:%s",
+        host,
+        port
+    );
+
+    if (!isProduction()) {
+        open("http://" + host + ":" + port);
+    }
+});
